@@ -80,8 +80,8 @@ while True:
         if mime == "text/gemini":
             menu = []
             for line in body.splitlines():
-                if line.startswith("\t") and line.count("\t") == 2:
-                    _, text, link_url = line.split("\t")
+                if line and line[0] == "[" and line[-1] == "]" and line.count("|") == 1:
+                    text, link_url = line[1:-1].split("|")
                     link_url = absolutise_url(url, link_url)
                     menu.append(link_url)
                     print("[%d] %s" % (len(menu), text))
