@@ -40,28 +40,28 @@ while True:
         print("Sorry, Gemini links only.")
         continue
     # Do the Gemini transaction, following redirects
-    while True:
-        try:
+    try:
+        while True:
             s = socket.create_connection((parsed_url.netloc, 1965))
             context = ssl.SSLContext()
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
             s = context.wrap_socket(s, server_hostname = parsed_url.netloc)
             s.sendall((parsed_url.path + '\r\n').encode("UTF-8"))
-        except:
-            print("Network error!")
-            continue
-        # Get header and check for redirects
-        fp = s.makefile("rb")
-        header = fp.readline()
-        header = header.decode("UTF-8").strip()
-        status, mime = header.split("\t")
-        # If this isn't a redirect, we're done
-        if not status.startswith("3"):
-            break
-        # Follow the redirect
-        url = absolutise_url(url, mime)
-        parsed_url = urllib.parse.urlparse(url)
+            # Get header and check for redirects
+            fp = s.makefile("rb")
+            header = fp.readline()
+            header = header.decode("UTF-8").strip()
+            status, mime = header.split("\t")
+            # If this isn't a redirect, we're done
+            if not status.startswith("3"):
+                break
+            # Follow the redirect
+            url = absolutise_url(url, mime)
+            parsed_url = urllib.parse.urlparse(url)
+    except Exception as err:
+        print(err)
+        continue
     # Fail if transaction was not successful
     if not status.startswith("2"):
         print("Error %s: %s" % (status, mime))
