@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 import cgi
+import mailcap
+import os
 import socket
 import ssl
+import tempfile
 import urllib.parse
 
+caps = mailcap.getcaps()
 menu = []
 hist = []
 
@@ -66,26 +70,33 @@ while True:
     if not status.startswith("2"):
         print("Error %s: %s" % (status, mime))
         continue
-    # Text only!
-    if not mime.startswith("text/"):
-        print("Sorry, plain text only.")
-        continue
-    else:
+    # Handle text
+    if mime.startswith("text/"):
+        # Decode according to declared charset
         mime, mime_opts = cgi.parse_header(mime)
         body = fp.read()
         body = body.decode(mime_opts.get("charset","UTF-8"))
-    # Handle a Gemini map
-    if mime == "text/gemini":
-        menu = []
-        for line in body.splitlines():
-            if line.startswith("\t") and line.count("\t") == 2:
-                _, text, link_url = line.split("\t")
-                link_url = absolutise_url(url, link_url)
-                menu.append(link_url)
-                print("[%d] %s" % (len(menu), text))
-            else:
-                print(line)
-    # Handle any other plain text
+        # Handle a Gemini map
+        if mime == "text/gemini":
+            menu = []
+            for line in body.splitlines():
+                if line.startswith("\t") and line.count("\t") == 2:
+                    _, text, link_url = line.split("\t")
+                    link_url = absolutise_url(url, link_url)
+                    menu.append(link_url)
+                    print("[%d] %s" % (len(menu), text))
+                else:
+                    print(line)
+        # Handle any other plain text
+        else:
+            print(body)
+    # Handle non-text
     else:
-        print(body)
+        tmpfp = tempfile.NamedTemporaryFile("wb", delete=False)
+        tmpfp.write(fp.read())
+        tmpfp.close()
+        cmd_str, _ = mailcap.findmatch(caps, mime, filename=tmpfp.name)
+        os.system(cmd_str)
+        os.unlink(tmpfp.name)
+    # Update history
     hist.append(url)
