@@ -80,10 +80,12 @@ while True:
         if mime == "text/gemini":
             menu = []
             for line in body.splitlines():
-                if line and line[0] == "[" and line[-1] == "]" and line.count("|") == 1:
-                    text, link_url = line[1:-1].split("|")
+                if line.startswith("=>") and line[2:].strip():
+                    bits = line[2:].strip().split(maxsplit=1)
+                    link_url = bits[0]
                     link_url = absolutise_url(url, link_url)
                     menu.append(link_url)
+                    text = bits[1] if len(bits) == 2 else link_url
                     print("[%d] %s" % (len(menu), text))
                 else:
                     print(line)
