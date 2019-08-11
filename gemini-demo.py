@@ -51,7 +51,7 @@ while True:
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
             s = context.wrap_socket(s, server_hostname = parsed_url.netloc)
-            s.sendall((parsed_url.path + '\r\n').encode("UTF-8"))
+            s.sendall((url + '\r\n').encode("UTF-8"))
             # Get header and check for redirects
             fp = s.makefile("rb")
             header = fp.readline()
