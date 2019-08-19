@@ -43,7 +43,7 @@ while True:
     if parsed_url.scheme != "gemini":
         print("Sorry, Gemini links only.")
         continue
-    # Do the Gemini transaction, following redirects
+    # Do the Gemini transaction
     try:
         while True:
             s = socket.create_connection((parsed_url.netloc, 1965))
@@ -57,12 +57,18 @@ while True:
             header = fp.readline()
             header = header.decode("UTF-8").strip()
             status, mime = header.split("\t")
-            # If this isn't a redirect, we're done
-            if not status.startswith("3"):
+            # Handle input requests
+            if status.startswith("1"):
+                # Prompt
+                query = input("INPUT" + mime + "> ")
+                url += "?" + urllib.parse.quote(query) # Bit lazy...
+            # Follow redirects
+            elif status.startswith("3"):
+                url = absolutise_url(url, mime)
+                parsed_url = urllib.parse.urlparse(url)
+            # Otherwise, we're done.
+            else:
                 break
-            # Follow the redirect
-            url = absolutise_url(url, mime)
-            parsed_url = urllib.parse.urlparse(url)
     except Exception as err:
         print(err)
         continue
