@@ -6,6 +6,7 @@ import os
 import socket
 import ssl
 import tempfile
+import textwrap
 import urllib.parse
 
 caps = mailcap.getcaps()
@@ -56,7 +57,7 @@ while True:
             fp = s.makefile("rb")
             header = fp.readline()
             header = header.decode("UTF-8").strip()
-            status, mime = header.split("\t")
+            status, mime = header.split()
             # Handle input requests
             if status.startswith("1"):
                 # Prompt
@@ -94,7 +95,7 @@ while True:
                     text = bits[1] if len(bits) == 2 else link_url
                     print("[%d] %s" % (len(menu), text))
                 else:
-                    print(line)
+                    print(textwrap.fill(line, 80))
         # Handle any other plain text
         else:
             print(body)
