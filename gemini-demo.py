@@ -86,8 +86,13 @@ while True:
         # Handle a Gemini map
         if mime == "text/gemini":
             menu = []
+            preformatted = False
             for line in body.splitlines():
-                if line.startswith("=>") and line[2:].strip():
+                if line.startswith("```"):
+                    preformatted = not preformatted
+                elif preformatted:
+                    print(line)
+                elif line.startswith("=>") and line[2:].strip():
                     bits = line[2:].strip().split(maxsplit=1)
                     link_url = bits[0]
                     link_url = absolutise_url(url, link_url)
