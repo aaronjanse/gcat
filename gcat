@@ -18,7 +18,7 @@ def absolutise_url(base, relative):
 
 if len(sys.argv) != 2:
     print("Usage:")
-    print("gurl gemini://example.com")
+    print("gcat gemini://gemini.circumlunar.space")
     sys.exit(1)
 
 url = sys.argv[1]

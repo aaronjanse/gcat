@@ -1,15 +1,15 @@
-# gurl
-> Featuring a nonsensical abuse of the `curl` acronym.
+# gcat
 
-Like `curl` but for gemini.
+Like `cat` but for gemini.
 
 Installation:
 ```
-git clone https://github.com/aaronjanse/gurl
-export $PATH=$PWD/gurl:$PATH
+git clone https://github.com/aaronjanse/gcat
+export $PATH=$PWD/gcat:$PATH
 ```
 
 Usage:
 ```
-gurl example.com
+gcat gemini://gemini.circumlunar.space
 ```
+
