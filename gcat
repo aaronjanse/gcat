@@ -26,9 +26,13 @@ parsed_url = urllib.parse.urlparse(url)
 if parsed_url.scheme != "gemini":
     print("Sorry, Gemini links only.")
     sys.exit(1)
+if parsed_url.port is not None:
+    useport = parsed_url.port
+else:
+    useport = 1965
 # Do the Gemini transaction
 while True:
-    s = socket.create_connection((parsed_url.netloc, 1965))
+    s = socket.create_connection((parsed_url.hostname, useport))
     context = ssl.SSLContext()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
