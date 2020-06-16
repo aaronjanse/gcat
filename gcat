@@ -23,6 +23,10 @@ if len(sys.argv) != 2:
 
 url = sys.argv[1]
 parsed_url = urllib.parse.urlparse(url)
+if parsed_url.scheme == "":
+    url = "gemini://"+url
+    parsed_url = urllib.parse.urlparse(url)
+
 if parsed_url.scheme != "gemini":
     print("Sorry, Gemini links only.")
     sys.exit(1)
