@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import cgi
+import email.message
 import os
 import socket
 import ssl
@@ -37,7 +37,7 @@ else:
 # Do the Gemini transaction
 while True:
     s = socket.create_connection((parsed_url.hostname, useport))
-    context = ssl.SSLContext()
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
     s = context.wrap_socket(s, server_hostname = parsed_url.netloc)
@@ -64,9 +64,10 @@ while True:
 if status.startswith("2"):
     if mime.startswith("text/"):
         # Decode according to declared charset
-        mime, mime_opts = cgi.parse_header(mime)
+        m = email.message.Message()
+        m.get_params()
         body = fp.read()
-        body = body.decode(mime_opts.get("charset","UTF-8"))
+        body = body.decode(m.get_param("charset", "UTF-8"))
         print(body, end="")
     else:
         print(fp.read(), end="")
